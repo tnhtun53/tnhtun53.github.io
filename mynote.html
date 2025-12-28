@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Notes</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    form { margin-bottom: 20px; }
+    input, textarea { width: 100%; margin: 5px 0; padding: 10px; }
+    button { padding: 10px; background: #333; color: white; border: none; }
+    .post { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+    .post h3 { margin: 0; }
+  </style>
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbzP3rHKZLzTj0zqyirSlR_gtC0ygO6bvSRyh_RGWIyd8NyRJreRuDu27qXOzd9rQBMiLQ/exec"; // Replace with your Apps Script URL
+
+  // Load posts
+  function loadPosts() {
+    fetch(scriptURL)
+      .then(res => res.json())
+      .then(data => {
+        const postsDiv = document.getElementById("posts");
+        postsDiv.innerHTML = "";
+        data.forEach(post => {
+          const div = document.createElement("div");
+          div.className = "post";
+          div.innerHTML = `<h3>${post.title}</h3><p>${post.content}</p><small>${post.timestamp}</small>`;
+          postsDiv.appendChild(div);
+        });
+      });
+  }
+
+  // Save post
+  document.getElementById("postForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const title = document.getElementById("title").value;
+    const content = document.getElementById("content").value;
+
+    fetch(scriptURL, {
+      method: "POST",
+      body: JSON.stringify({ title, content })
+    })
+    .then(() => {
+      document.getElementById("postForm").reset();
+      loadPosts();
+    })
+    .catch(err => console.error("Error:", err));
+  });
+
+  // Initial load
+  loadPosts();
+</script>
+
+</head>
+<body>
+  <h2>Daily Posts</h2>
+
+  <!-- Upload Form -->
+  <form id="postForm">
+    <input type="text" id="title" placeholder="Post Title" required>
+    <textarea id="content" placeholder="Write your note..." required></textarea>
+    <button type="submit">Save Post</button>
+  </form>
+
+  <!-- Display Posts -->
+  <div id="posts"></div>
+
+  <script>
+    // Load saved posts from localStorage
+    function loadPosts() {
+      const posts = JSON.parse(localStorage.getItem("mynotes")) || [];
+      const postsDiv = document.getElementById("posts");
+      postsDiv.innerHTML = "";
+      posts.forEach(post => {
+        const div = document.createElement("div");
+        div.className = "post";
+        div.innerHTML = `<h3>${post.title}</h3><p>${post.content}</p>`;
+        postsDiv.appendChild(div);
+      });
+    }
+
+    // Handle form submission
+    document.getElementById("postForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+
+      const posts = JSON.parse(localStorage.getItem("mynotes")) || [];
+      posts.push({ title, content });
+      localStorage.setItem("mynotes", JSON.stringify(posts));
+
+      document.getElementById("postForm").reset();
+      loadPosts();
+    });
+
+    // Initial load
+    loadPosts();
+  </script>
+</body>
+</html>

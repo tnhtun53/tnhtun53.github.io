@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head><title>Register</title></head>
+<body>
+  <h2>Register</h2>
+  <form id="registerForm">
+    <input type="text" id="no" placeholder="No" required>
+    <input type="text" id="rank" placeholder="Rank" required>
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="text" id="unit" placeholder="Unit" required>
+    <input type="text" id="address" placeholder="Address" required>
+    <input type="text" id="phone" placeholder="Phone No" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxMuxes6X8SFPdglWuOWBBR4syEJ1s0pEGZFkOoY70Te1QK220qfJIRrAm-BoZvGIcq/exec"; // Replace with your Apps Script URL
+
+    document.getElementById("registerForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const data = {
+        no: document.getElementById("no").value,
+        rank: document.getElementById("rank").value,
+        name: document.getElementById("name").value,
+        unit: document.getElementById("unit").value,
+        address: document.getElementById("address").value,
+        phone: document.getElementById("phone").value
+      };
+
+      fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+      })
+      .then(() => alert("Registration saved!"))
+      .catch(err => console.error("Error:", err));
+    });
+  </script>
+</body>
+</html>
