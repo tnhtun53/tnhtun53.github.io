@@ -1,36 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>T&M</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { text-align: center; background: #333; color: white; padding: 20px; }
-    nav { background: #444; text-align: center; }
-    nav a { color: white; padding: 14px 20px; display: inline-block; text-decoration: none; }
-    nav a:hover { background: #666; }
-    section { padding: 20px; }
-    form { max-width: 400px; margin: auto; }
-    input, textarea { width: 100%; padding: 10px; margin: 5px 0; }
-    button { padding: 10px 20px; background: #333; color: white; border: none; }
-  </style>
+    <meta charset="UTF-8">
+    <title>T & M | Neon Hacker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
 
-<header>
-  <h1>T&M</h1>
-</header>
+<body class="hacker-theme">
+    <header>
+        <h1 class="center-title neon-glow">T & M</h1>
+        <nav class="center-menu">
+            <button onclick="showPage('home')" class="neon-btn">HOME</button>
+            <button onclick="showPage('note')" class="neon-btn">NOTE</button>
+        </nav>
+    </header>
 
-<nav>
-  <a href="about.html">AboutMe</a>
-  <a href="mynote.html">MyNote</a>
-  <a href="register.html">Register</a>
-</nav>
+    <main>
+        <!-- Home Page with Fixed Layout -->
+        <div id="home" class="page">
+            <div class="fixed-grid">
+                <div class="box neon-border">
+                    <h3 class="neon-text">1. Hacking Tutorial</h3>
+                    <ul class="links">
+                        <li><a href="https://www.hackthebox.com" target="_blank">>> HackTheBox</a></li>
+                        <li><a href="https://tryhackme.com" target="_blank">>> TryHackMe</a></li>
+                    </ul>
+                </div>
+                <div class="box neon-border">
+                    <h3 class="neon-text">2. Pentesting Lab</h3>
+                    <ul class="links">
+                        <li><a href="https://www.vulnhub.com" target="_blank">>> VulnHub</a></li>
+                        <li><a href="https://www.offensive-security.com" target="_blank">>> OSCP Lab</a></li>
+                    </ul>
+                </div>
+                <div class="box neon-border">
+                    <h3 class="neon-text">3. Online Learning</h3>
+                    <ul class="links">
+                        <li><a href="https://www.udemy.com" target="_blank">>> Udemy</a></li>
+                        <li><a href="https://www.coursera.org" target="_blank">>> Coursera</a></li>
+                    </ul>
+                </div>
+                <div class="box neon-border">
+                    <h3 class="neon-text">4. YouTube Channel</h3>
+                    <ul class="links">
+                        <li><a href="https://www.youtube.com" target="_blank">>> NetworkChuck</a></li>
+                        <li><a href="https://www.youtube.com" target="_blank">>> IppSec</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-<section>
-  <h2>Welcome to T&M Blog</h2>
-  <p>This is my personal blog. Use the menu to explore.</p>
-</section>
+        <!-- Note Page with Rainbow Animation -->
+        <div id="note" class="page" style="display:none;">
+            <div class="rainbow-container">
+                <h2 class="rainbow-animation">I love MonMon</h2>
+            </div>
+        </div>
+    </main>
 
+    <script src="script.js"></script>
 </body>
+
 </html>
