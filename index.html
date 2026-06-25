@@ -118,6 +118,35 @@
       }
     }
 
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
@@ -131,6 +160,22 @@
     }
     ::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* File input styling */
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .file-input-label {
+      display: inline-block;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -156,10 +201,25 @@
             Welcome to T&amp;M. This workspace is designed to be your central hub for profile management, task tracking, and IoT device control, optimized for any screen size.
           </p>
 
+          <!-- Post Status Section -->
           <div class="mt-8 space-y-4">
-            <label for="postInput" class="text-xs uppercase tracking-widest text-cyan-300/90 font-bold">Home Feed</label>
+            <label for="postTitle" class="text-xs uppercase tracking-widest text-cyan-300/90 font-bold">Post Title</label>
+            <input id="postTitle" type="text" maxlength="100" placeholder="Enter post title..."
+              class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-sm outline-none focus:border-cyan-300/70 transition-colors" />
+            
+            <label for="postInput" class="text-xs uppercase tracking-widest text-cyan-300/90 font-bold">Post Content</label>
             <textarea id="postInput" rows="3" maxlength="280" placeholder="Share an update with the world..."
               class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-sm outline-none focus:border-cyan-300/70 transition-colors"></textarea>
+            
+            <!-- File Upload Section -->
+            <label class="text-xs uppercase tracking-widest text-cyan-300/90 font-bold">Upload File</label>
+            <div class="file-input-wrapper">
+              <input id="fileInput" type="file" accept="image/*,application/pdf,.doc,.docx,.txt" />
+              <label for="fileInput" class="file-input-label w-full p-4 rounded-xl bg-white/5 border border-white/10 border-dashed text-sm text-center text-cyan-300/70 hover:bg-white/10 transition-colors cursor-pointer">
+                <span id="fileName">Click to select file or drag and drop</span>
+              </label>
+            </div>
+
             <button id="postButton" class="w-full py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-300 font-bold hover:bg-cyan-400/20 transition-all active:scale-[0.98]">
               Post Status
             </button>
@@ -220,6 +280,24 @@
     </footer>
   </div>
 
+  <!-- Password Modal -->
+  <div class="modal-overlay" id="passwordModal">
+    <div class="modal-content">
+      <h3 class="text-lg font-bold text-cyan-300 mb-4">Upload Protection</h3>
+      <p class="text-sm text-[var(--muted)] mb-6">Enter password to upload file:</p>
+      <input id="passwordInput" type="password" placeholder="Enter password..."
+        class="w-full p-3 rounded-lg bg-white/5 border border-white/10 text-sm outline-none focus:border-cyan-300/70 transition-colors mb-4" />
+      <div class="flex gap-3">
+        <button id="cancelUpload" class="flex-1 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-[var(--muted)] hover:bg-white/10 transition-colors">
+          Cancel
+        </button>
+        <button id="confirmUpload" class="flex-1 py-2 rounded-lg bg-cyan-400/10 border border-cyan-400/30 text-sm text-cyan-300 font-bold hover:bg-cyan-400/20 transition-colors">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Initialize Parse
     Parse.initialize("Pru6uxCpwuvuTsMp7oTbJPLLLpzwBWGZueMjwTYW", "BH9Q627PozWMEEY7m02DKnTl4MbGrGmNLt6KIqbP");
@@ -227,10 +305,48 @@
 
     const buttons = document.querySelectorAll('.menu-btn');
     const panels = document.querySelectorAll('.panel');
+    const postTitle = document.getElementById('postTitle');
     const postInput = document.getElementById('postInput');
     const postButton = document.getElementById('postButton');
     const postStatus = document.getElementById('postStatus');
     const postList = document.getElementById('postList');
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const passwordModal = document.getElementById('passwordModal');
+    const passwordInput = document.getElementById('passwordInput');
+    const confirmUpload = document.getElementById('confirmUpload');
+    const cancelUpload = document.getElementById('cancelUpload');
+
+    let selectedFile = null;
+    const UPLOAD_PASSWORD = 'admin123'; // Change this to your desired password
+
+    // File input handling
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        selectedFile = e.target.files[0];
+        fileName.textContent = selectedFile.name;
+      }
+    });
+
+    // Drag and drop
+    const fileLabel = document.querySelector('.file-input-label');
+    fileLabel.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileLabel.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+    });
+
+    fileLabel.addEventListener('dragleave', () => {
+      fileLabel.style.backgroundColor = '';
+    });
+
+    fileLabel.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileLabel.style.backgroundColor = '';
+      if (e.dataTransfer.files.length > 0) {
+        selectedFile = e.dataTransfer.files[0];
+        fileName.textContent = selectedFile.name;
+      }
+    });
 
     async function loadPosts() {
       try {
@@ -248,11 +364,13 @@
         }
 
         results.forEach((item) => {
+          const title = item.get('title') || 'Untitled';
           const content = item.get('content') || '';
           const created = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'just now';
           const card = document.createElement('div');
           card.className = 'p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-all';
           card.innerHTML = `
+            <p class="text-sm font-bold text-cyan-300 mb-2">${title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
             <p class="text-sm text-slate-100 break-words">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
             <p class="text-[10px] text-cyan-500/60 mt-2 font-bold uppercase tracking-tighter">${created}</p>
           `;
@@ -264,23 +382,46 @@
     }
 
     async function createPost() {
+      const title = postTitle.value.trim();
       const text = postInput.value.trim();
-      if (!text) {
-        postStatus.textContent = 'Input required';
+
+      if (!title || !text) {
+        postStatus.textContent = 'Title and content required';
         setTimeout(() => postStatus.textContent = '', 2000);
         return;
       }
 
+      // If file is selected, show password modal
+      if (selectedFile) {
+        passwordModal.classList.add('active');
+        return;
+      }
+
+      // Otherwise, create post without file
+      await savePost(title, text, null);
+    }
+
+    async function savePost(title, content, fileData) {
       try {
         postButton.disabled = true;
         postStatus.textContent = 'Syncing...';
 
         const Post = Parse.Object.extend('Post');
         const post = new Post();
-        post.set('content', text);
+        post.set('title', title);
+        post.set('content', content);
+        
+        if (fileData) {
+          post.set('fileName', fileData.name);
+          post.set('fileSize', fileData.size);
+        }
+
         await post.save();
 
+        postTitle.value = '';
         postInput.value = '';
+        selectedFile = null;
+        fileName.textContent = 'Click to select file or drag and drop';
         postStatus.textContent = 'Post confirmed';
         setTimeout(() => postStatus.textContent = '', 3000);
         await loadPosts();
@@ -290,6 +431,31 @@
         postButton.disabled = false;
       }
     }
+
+    confirmUpload.addEventListener('click', async () => {
+      const enteredPassword = passwordInput.value;
+
+      if (enteredPassword !== UPLOAD_PASSWORD) {
+        postStatus.textContent = 'Incorrect password';
+        setTimeout(() => postStatus.textContent = '', 2000);
+        passwordModal.classList.remove('active');
+        passwordInput.value = '';
+        return;
+      }
+
+      const title = postTitle.value.trim();
+      const content = postInput.value.trim();
+      const fileData = selectedFile ? { name: selectedFile.name, size: selectedFile.size } : null;
+
+      await savePost(title, content, fileData);
+      passwordModal.classList.remove('active');
+      passwordInput.value = '';
+    });
+
+    cancelUpload.addEventListener('click', () => {
+      passwordModal.classList.remove('active');
+      passwordInput.value = '';
+    });
 
     // Navigation logic
     buttons.forEach((button) => {
