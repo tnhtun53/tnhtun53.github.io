@@ -1,480 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>T&amp;M - Control Panel</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="https://npmcdn.com/parse/dist/parse.min.js"></script>
-  <style>
-    :root {
-      --bg: #0b1020;
-      --card: #121a31;
-      --text: #e8f0ff;
-      --muted: #9fb0d1;
-      --accent: #4fd1c5;
-      --accent-soft: rgba(79, 209, 197, 0.2);
-    }
-
-    body {
-      font-family: 'Manrope', sans-serif;
-      background: radial-gradient(circle at 10% 10%, #1b2b55 0%, var(--bg) 45%), var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .title-font {
-      font-family: 'Rajdhani', sans-serif;
-      letter-spacing: 0.08em;
-    }
-
-    /* Responsive Shell Layout */
-    .app-shell {
-      width: 100%;
-      min-height: 100vh;
-      margin: 0 auto;
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
-      backdrop-filter: blur(10px);
-      display: flex;
-      flex-direction: column;
-      transition: all 0.3s ease;
-    }
-
-    /* Mobile (Android) View - Default */
-    @media (max-width: 639px) {
-      .app-shell {
-        max-width: 100%;
-      }
-    }
-
-    /* Tablet View */
-    @media (min-width: 640px) and (max-width: 1023px) {
-      .app-shell {
-        max-width: 680px;
-        border-left: 1px solid rgba(255,255,255,0.08);
-        border-right: 1px solid rgba(255,255,255,0.08);
-        margin: 20px auto;
-        border-radius: 24px;
-        min-height: calc(100vh - 40px);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      }
-    }
-
-    /* Desktop View */
-    @media (min-width: 1024px) {
-      .app-shell {
-        max-width: 1000px;
-        border-left: 1px solid rgba(255,255,255,0.08);
-        border-right: 1px solid rgba(255,255,255,0.08);
-        margin: 40px auto;
-        border-radius: 32px;
-        min-height: calc(100vh - 80px);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      }
-    }
-
-    .menu-btn {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .menu-btn.active {
-      color: var(--accent);
-      text-shadow: 0 0 12px rgba(79, 209, 197, 0.5);
-    }
-
-    .menu-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 25%;
-      right: 25%;
-      height: 2px;
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-    }
-
-    .panel {
-      display: none;
-      animation: fade 260ms ease;
-    }
-
-    .panel.active {
-      display: block;
-    }
-
-    @keyframes fade {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Modal Styles */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
-      z-index: 50;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: var(--card);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.02);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* File input styling */
-    .file-input-wrapper {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .file-input-wrapper input[type="file"] {
-      position: absolute;
-      left: -9999px;
-    }
-
-    .file-input-label {
-      display: inline-block;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio of tnhtun53 - Full Stack Developer">
+    <title>tnhtun53 | Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-shell">
-    <header class="px-6 pt-8 pb-5 border-b border-white/10 sticky top-0 bg-[#0b1020]/95 backdrop-blur-md z-10 sm:rounded-t-3xl">
-     <h1 class="title-font text-3xl font-bold text-cyan-300 text-center">T&amp;M</h1>
-      <p class="text-sm text-slate-400 mt-1 text-center">Smart daily control panel</p>
-    </header>
-
-    <!-- TOC / Navigation -->
-    <nav class="flex justify-around sm:justify-center sm:gap-12 px-4 py-1 border-b border-white/10 bg-[#101936]/75">
-      <button class="menu-btn active text-sm font-semibold py-4 transition-all duration-300 hover:text-cyan-200" data-panel="about">AboutME</button>
-      <button class="menu-btn text-sm font-semibold py-4 transition-all duration-300 hover:text-cyan-200" data-panel="todo">ToDoList</button>
-      <button class="menu-btn text-sm font-semibold py-4 transition-all duration-300 hover:text-cyan-200" data-panel="iot">IOT</button>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">tnhtun53</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
     </nav>
 
-    <main class="flex-1 p-5 sm:p-8 space-y-6 overflow-y-auto">
-      <section class="panel active" id="about">
-        <div class="rounded-2xl p-6 bg-[var(--card)] border border-white/10 shadow-lg">
-          <h2 class="title-font text-2xl text-cyan-200 border-b border-white/5 pb-3">AboutME</h2>
-          <p class="text-sm sm:text-base text-[var(--muted)] mt-4 leading-relaxed">
-            Welcome to T&amp;M. This workspace is designed to be your central hub for profile management, task tracking, and IoT device control, optimized for any screen size.
-          </p>
-
-          <!-- Post Status Section -->
-          <div class="mt-8 space-y-4">
-            <label for="postTitle" class="text-xs uppercase tracking-widest text-cyan-300/90 font-bold">Post Title</label>
-            <input id="postTitle" type="text" maxlength="100" placeholder="Enter post title..."
-              class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-sm outline-none focus:border-cyan-300/70 transition-colors" />
-            
-            <label for="postInput" class="text-xs uppercase tracking-widest text-cyan-300/90 font-bold">Post Content</label>
-            <textarea id="postInput" rows="3" maxlength="280" placeholder="Share an update with the world..."
-              class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-sm outline-none focus:border-cyan-300/70 transition-colors"></textarea>
-            
-            <!-- File Upload Section -->
-            <label class="text-xs uppercase tracking-widest text-cyan-300/90 font-bold">Upload File</label>
-            <div class="file-input-wrapper">
-              <input id="fileInput" type="file" accept="image/*,application/pdf,.doc,.docx,.txt" />
-              <label for="fileInput" class="file-input-label w-full p-4 rounded-xl bg-white/5 border border-white/10 border-dashed text-sm text-center text-cyan-300/70 hover:bg-white/10 transition-colors cursor-pointer">
-                <span id="fileName">Click to select file or drag and drop</span>
-              </label>
-            </div>
-
-            <button id="postButton" class="w-full py-3 rounded-xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-300 font-bold hover:bg-cyan-400/20 transition-all active:scale-[0.98]">
-              Post Status
-            </button>
-            <p id="postStatus" class="text-xs text-center text-[var(--muted)] h-4"></p>
-          </div>
-
-          <div class="mt-8">
-            <h3 class="text-sm font-bold text-cyan-100 uppercase tracking-wider mb-4">Recent Activity</h3>
-            <div id="postList" class="space-y-3">
-              <!-- Posts will be injected here -->
-            </div>
-          </div>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>Hi, I'm tnhtun53</h1>
+            <p class="tagline">Full Stack Developer | Problem Solver | Tech Enthusiast</p>
+            <a href="#projects" class="btn btn-primary">View My Work</a>
         </div>
-      </section>
+    </section>
 
-      <section class="panel" id="todo">
-        <div class="rounded-2xl p-6 bg-[var(--card)] border border-white/10 shadow-lg">
-          <h2 class="title-font text-2xl text-cyan-200 border-b border-white/5 pb-3">ToDoList</h2>
-          <ul class="mt-6 space-y-3 text-sm sm:text-base">
-            <li class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-cyan-500/30 transition-colors">
-              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]"></span>
-              Morning system status check
-            </li>
-            <li class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-cyan-500/30 transition-colors">
-              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]"></span>
-              Update security protocols
-            </li>
-            <li class="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-cyan-500/30 transition-colors">
-              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]"></span>
-              Review IoT device telemetry
-            </li>
-          </ul>
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About Me</h2>
+            <p>I'm a passionate full-stack developer with a love for creating elegant solutions to complex problems. I enjoy working with modern technologies and continuously learning new skills.</p>
+            <p>When I'm not coding, you can find me exploring new tech trends, contributing to open source, or working on side projects.</p>
         </div>
-      </section>
+    </section>
 
-      <section class="panel" id="iot">
-        <div class="rounded-2xl p-6 bg-[var(--card)] border border-white/10 shadow-lg">
-          <h2 class="title-font text-2xl text-cyan-200 border-b border-white/5 pb-3">IOT Control</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div class="p-5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-              <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Central Gateway</p>
-              <p class="text-cyan-400 font-bold text-lg flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                Online
-              </p>
+    <!-- Projects Section -->
+    <section id="projects" class="projects">
+        <div class="container">
+            <h2>Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-header">Project One</div>
+                    <p>Description of your first project. Explain what it does and the technologies used.</p>
+                    <div class="project-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">Node.js</span>
+                    </div>
+                    <a href="#" class="project-link">View Project →</a>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">Project Two</div>
+                    <p>Description of your second project. Highlight key features and technologies.</p>
+                    <div class="project-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Django</span>
+                    </div>
+                    <a href="#" class="project-link">View Project →</a>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">Project Three</div>
+                    <p>Description of your third project. Show your technical expertise and creativity.</p>
+                    <div class="project-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Vue.js</span>
+                    </div>
+                    <a href="#" class="project-link">View Project →</a>
+                </div>
             </div>
-            <div class="p-5 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-              <p class="text-xs uppercase tracking-widest text-slate-400 mb-1">Active Sensors</p>
-              <p class="text-cyan-400 font-bold text-lg">8 Devices</p>
-            </div>
-          </div>
         </div>
-      </section>
-    </main>
+    </section>
 
-    <footer class="p-4 text-center text-[10px] text-slate-500 uppercase tracking-widest">
-      &copy; 2026 T&amp;M Digital Systems
+    <!-- Skills Section -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2>Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li>HTML5 & CSS3</li>
+                        <li>JavaScript</li>
+                        <li>React</li>
+                        <li>Vue.js</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>Node.js</li>
+                        <li>Python</li>
+                        <li>Django</li>
+                        <li>REST APIs</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3>Tools & Platforms</h3>
+                    <ul>
+                        <li>Git & GitHub</li>
+                        <li>Docker</li>
+                        <li>AWS</li>
+                        <li>VS Code</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Get In Touch</h2>
+            <p>I'd love to hear from you! Feel free to reach out via email or connect with me on social media.</p>
+            <div class="contact-links">
+                <a href="mailto:your-email@example.com" class="btn btn-primary">Send an Email</a>
+                <a href="https://github.com/tnhtun53" class="social-link">GitHub</a>
+                <a href="https://linkedin.com" class="social-link">LinkedIn</a>
+                <a href="https://twitter.com" class="social-link">Twitter</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 tnhtun53. All rights reserved.</p>
+        </div>
     </footer>
-  </div>
-
-  <!-- Password Modal -->
-  <div class="modal-overlay" id="passwordModal">
-    <div class="modal-content">
-      <h3 class="text-lg font-bold text-cyan-300 mb-4">Upload Protection</h3>
-      <p class="text-sm text-[var(--muted)] mb-6">Enter password to upload file:</p>
-      <input id="passwordInput" type="password" placeholder="Enter password..."
-        class="w-full p-3 rounded-lg bg-white/5 border border-white/10 text-sm outline-none focus:border-cyan-300/70 transition-colors mb-4" />
-      <div class="flex gap-3">
-        <button id="cancelUpload" class="flex-1 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-[var(--muted)] hover:bg-white/10 transition-colors">
-          Cancel
-        </button>
-        <button id="confirmUpload" class="flex-1 py-2 rounded-lg bg-cyan-400/10 border border-cyan-400/30 text-sm text-cyan-300 font-bold hover:bg-cyan-400/20 transition-colors">
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Initialize Parse
-    Parse.initialize("Pru6uxCpwuvuTsMp7oTbJPLLLpzwBWGZueMjwTYW", "BH9Q627PozWMEEY7m02DKnTl4MbGrGmNLt6KIqbP");
-    Parse.serverURL = "https://parseapi.back4app.com/";
-
-    const buttons = document.querySelectorAll('.menu-btn');
-    const panels = document.querySelectorAll('.panel');
-    const postTitle = document.getElementById('postTitle');
-    const postInput = document.getElementById('postInput');
-    const postButton = document.getElementById('postButton');
-    const postStatus = document.getElementById('postStatus');
-    const postList = document.getElementById('postList');
-    const fileInput = document.getElementById('fileInput');
-    const fileName = document.getElementById('fileName');
-    const passwordModal = document.getElementById('passwordModal');
-    const passwordInput = document.getElementById('passwordInput');
-    const confirmUpload = document.getElementById('confirmUpload');
-    const cancelUpload = document.getElementById('cancelUpload');
-
-    let selectedFile = null;
-    const UPLOAD_PASSWORD = 'admin123'; // Change this to your desired password
-
-    // File input handling
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) {
-        selectedFile = e.target.files[0];
-        fileName.textContent = selectedFile.name;
-      }
-    });
-
-    // Drag and drop
-    const fileLabel = document.querySelector('.file-input-label');
-    fileLabel.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      fileLabel.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-    });
-
-    fileLabel.addEventListener('dragleave', () => {
-      fileLabel.style.backgroundColor = '';
-    });
-
-    fileLabel.addEventListener('drop', (e) => {
-      e.preventDefault();
-      fileLabel.style.backgroundColor = '';
-      if (e.dataTransfer.files.length > 0) {
-        selectedFile = e.dataTransfer.files[0];
-        fileName.textContent = selectedFile.name;
-      }
-    });
-
-    async function loadPosts() {
-      try {
-        const Post = Parse.Object.extend('Post');
-        const query = new Parse.Query(Post);
-        query.descending('createdAt');
-        query.limit(10);
-
-        const results = await query.find();
-        postList.innerHTML = '';
-
-        if (!results.length) {
-          postList.innerHTML = '<p class="text-xs text-center py-4 text-[var(--muted)] italic">No recent activity found.</p>';
-          return;
-        }
-
-        results.forEach((item) => {
-          const title = item.get('title') || 'Untitled';
-          const content = item.get('content') || '';
-          const created = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'just now';
-          const card = document.createElement('div');
-          card.className = 'p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-all';
-          card.innerHTML = `
-            <p class="text-sm font-bold text-cyan-300 mb-2">${title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
-            <p class="text-sm text-slate-100 break-words">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
-            <p class="text-[10px] text-cyan-500/60 mt-2 font-bold uppercase tracking-tighter">${created}</p>
-          `;
-          postList.appendChild(card);
-        });
-      } catch (error) {
-        postStatus.textContent = `Error: ${error.message}`;
-      }
-    }
-
-    async function createPost() {
-      const title = postTitle.value.trim();
-      const text = postInput.value.trim();
-
-      if (!title || !text) {
-        postStatus.textContent = 'Title and content required';
-        setTimeout(() => postStatus.textContent = '', 2000);
-        return;
-      }
-
-      // If file is selected, show password modal
-      if (selectedFile) {
-        passwordModal.classList.add('active');
-        return;
-      }
-
-      // Otherwise, create post without file
-      await savePost(title, text, null);
-    }
-
-    async function savePost(title, content, fileData) {
-      try {
-        postButton.disabled = true;
-        postStatus.textContent = 'Syncing...';
-
-        const Post = Parse.Object.extend('Post');
-        const post = new Post();
-        post.set('title', title);
-        post.set('content', content);
-        
-        if (fileData) {
-          post.set('fileName', fileData.name);
-          post.set('fileSize', fileData.size);
-        }
-
-        await post.save();
-
-        postTitle.value = '';
-        postInput.value = '';
-        selectedFile = null;
-        fileName.textContent = 'Click to select file or drag and drop';
-        postStatus.textContent = 'Post confirmed';
-        setTimeout(() => postStatus.textContent = '', 3000);
-        await loadPosts();
-      } catch (error) {
-        postStatus.textContent = `Failed: ${error.message}`;
-      } finally {
-        postButton.disabled = false;
-      }
-    }
-
-    confirmUpload.addEventListener('click', async () => {
-      const enteredPassword = passwordInput.value;
-
-      if (enteredPassword !== UPLOAD_PASSWORD) {
-        postStatus.textContent = 'Incorrect password';
-        setTimeout(() => postStatus.textContent = '', 2000);
-        passwordModal.classList.remove('active');
-        passwordInput.value = '';
-        return;
-      }
-
-      const title = postTitle.value.trim();
-      const content = postInput.value.trim();
-      const fileData = selectedFile ? { name: selectedFile.name, size: selectedFile.size } : null;
-
-      await savePost(title, content, fileData);
-      passwordModal.classList.remove('active');
-      passwordInput.value = '';
-    });
-
-    cancelUpload.addEventListener('click', () => {
-      passwordModal.classList.remove('active');
-      passwordInput.value = '';
-    });
-
-    // Navigation logic
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const target = button.dataset.panel;
-
-        buttons.forEach((btn) => btn.classList.remove('active'));
-        panels.forEach((panel) => panel.classList.remove('active'));
-
-        button.classList.add('active');
-        const targetPanel = document.getElementById(target);
-        if (targetPanel) targetPanel.classList.add('active');
-      });
-    });
-
-    postButton.addEventListener('click', createPost);
-    
-    // Initial load
-    loadPosts();
-  </script>
 </body>
 </html>
